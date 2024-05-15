@@ -1,0 +1,20 @@
+---
+# Nginx Variables
+
+# Setting Proxy Environment Variables
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+# GPG Key Configuration
+gpg_path: "/usr/share/keyrings/redis-archive-keyring.gpg"
+gpg_key: "curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null"
+
+# Nginx Repository Configuration
+nginx_repo_path: "/etc/apt/sources.list.d/nginx.list"
+nginx_repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx | sudo tee /etc/apt/sources.list.d/nginx.list"
+
+internal_nginx: '172.31.10.141'
+external_nginx: '172.31.20.186'
+haproxy: '172.31.10.150'

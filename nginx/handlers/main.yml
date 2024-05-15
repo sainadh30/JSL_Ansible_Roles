@@ -1,0 +1,12 @@
+# handlers file for nginx
+- name: restart_nginx
+  service:
+    name: nginx
+    state: restarted
+  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
+
+- name: restart HAProxy
+  service:
+    name: haproxy
+    state: restarted
+  when: "'load_balancer' in group_names"

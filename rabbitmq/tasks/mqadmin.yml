@@ -1,0 +1,33 @@
+---
+- name: List RabbitMQ plugins
+  ansible.builtin.shell:
+    cmd: sudo rabbitmq-plugins list
+  register: rabbitmq_plugins_list
+  changed_when: false
+
+- name: Enable rabbitmq_management plugin if not already enabled
+  ansible.builtin.shell:
+    cmd: sudo rabbitmq-plugins enable rabbitmq_management
+  when: "'rabbitmq_management' not in rabbitmq_plugins_list.stdout"
+
+- name: Locate rabbitmqadmin
+  ansible.builtin.shell:
+    cmd: find /usr/lib/rabbitmq/lib/rabbitmq_server-3.13.0/plugins/rabbitmq_management-3.*/priv/www/cli -name rabbitmqadmin -type f -print -quit
+  register: rabbitmqadmin_location
+  changed_when: false
+
+- name: Grant execution permission to rabbitmqadmin
+  ansible.builtin.command:
+    cmd: sudo chmod +x "{{ rabbitmqadmin_location.stdout }}"
+
+- name: Copy rabbitmqadmin to /usr/bin/
+  ansible.builtin.command:
+    cmd: sudo cp "{{ rabbitmqadmin_location.stdout }}" /usr/bin/
+
+- name: Check rabbitmqadmin by listing queues
+  ansible.builtin.command:
+    cmd: sudo rabbitmqctl list_queues
+  register: rabbitmqctl_list_queues
+
+- debug:
+    var: rabbitmqctl_list_queues.stdout

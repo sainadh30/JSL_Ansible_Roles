@@ -1,0 +1,29 @@
+---
+# Redis Variables
+
+# Setting Proxy Environment Variables
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+# GPG Key Configuration
+gpg_path: "/usr/share/keyrings/redis-archive-keyring.gpg"
+gpg_key: "curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg"
+
+# Nginx Repository Configuration
+redis_repo_path: "/etc/apt/sources.list.d/redis.list"
+redis_repo: "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_distribution_release }} main | sudo tee /etc/apt/sources.list.d/redis.list"
+
+# Redis master, slaves hostname
+redis_master: "172.31.81.82"
+
+redis_slave1: "172.31.28.179"
+
+redis_slave2: "172.31.34.174"
+
+# Default Redis Master password
+redis_master_password: "redis@123"
+
+# Redis Port
+redis_port: "6379"

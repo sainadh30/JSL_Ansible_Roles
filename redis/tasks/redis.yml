@@ -1,0 +1,51 @@
+---
+- name: Check if Redis Repository GPG Key file exists
+  ansible.builtin.stat:
+    path: "{{ gpg_path }}"
+  register: redis_key_stat
+
+- name: Add Redis Repository GPG Key
+  ansible.builtin.shell:
+    cmd: "{{ gpg_key }}"
+  when: not redis_key_stat.stat.exists
+
+- name: Check if Redis Repository file exists
+  ansible.builtin.stat:
+    path: "{{ redis_repo_path }}"
+  register: redis_repo_stat
+
+- name: Add Redis Repository to System
+  ansible.builtin.lineinfile:
+    path: "{{ redis_repo_path }}"
+    line: "{{ redis_repo }}"
+    create: yes
+  when: not redis_repo_stat.stat.exists
+
+- name: Update Redis Repository
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Redis
+  ansible.builtin.apt:
+    name: redis-server
+    state: present
+
+- name: Start and Enable Redis service
+  ansible.builtin.systemd:
+    name: redis-server
+    state: started
+    enabled: yes
+
+- name: Check Status of Redis Service
+  ansible.builtin.systemd:
+    name: redis-server
+    state: started
+  register: redis_status
+
+- name: Display Redis service status
+  ansible.builtin.debug:
+    msg: "{{ ansible_hostname }} : {{ ansible_host }} - Redis Service is  {{ 'Running' if redis_status.state == 'started' else 'Not Running'}}"
+
+- name: Set Redis Package to Remain Fixed at v7.2.4 (Disable auto-update)
+  ansible.builtin.command:
+    cmd: echo "redis-server hold" | sudo dpkg --set-selections

@@ -1,0 +1,18 @@
+---
+# tasks file for nginx
+
+# Set up proxy
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+# Install Nginx
+- name: Install Nginx
+  include_tasks: nginx.yml
+
+# Configure Nginx
+- name: Configure Nginx
+  include_tasks: nginxconf.yml
+
+# Install HAProxy
+- name: Install HAProxy
+  include_tasks: haproxy.yml

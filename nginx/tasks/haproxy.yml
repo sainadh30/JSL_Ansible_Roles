@@ -1,0 +1,32 @@
+---
+- name: Install HAProxy
+  apt:
+    name: haproxy
+    state: present
+  when: "'load_balancer' in group_names"
+
+- name: Configure HAProxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: restart HAProxy
+  when: "'load_balancer' in group_names"
+
+- name: Ensure HAProxy service is enabled and started
+  service:
+    name: haproxy
+    state: started
+    enabled: yes
+  when: "'load_balancer' in group_names"
+
+- name: Check Status of HAProxy Service
+  ansible.builtin.systemd:
+    name: haproxy
+    state: started
+  register: haproxy_status
+  when: "'load_balancer' in group_names"
+
+- name: Display HAProxy service status
+  ansible.builtin.debug:
+    msg: "{{ ansible_hostname }} : {{ ansible_host }} - HAProxy Service is  {{ 'Running' if haproxy_status.state == 'started' else 'Not Running'}}"
+  when: "'load_balancer' in group_names"

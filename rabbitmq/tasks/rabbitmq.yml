@@ -1,0 +1,22 @@
+- name: Add RabbitMQ Repository GPG Key
+  ansible.builtin.shell: "{{ item }}"
+  loop: "{{ gpg_key }}"
+
+- name: Add RabbitMQ Repository to System
+  ansible.builtin.lineinfile:
+    path: "/etc/apt/sources.list.d/rabbitmq.list"
+    line: "{{ item }}"
+    create: yes
+  loop: "{{ repo_key }}"
+
+- name: Update RabbitMQ Repository
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install RabbitMQ
+  ansible.builtin.apt:
+    name: rabbitmq-server
+    state: present
+
+- name: Set RabbitMQ Package to Remain Fixed at v3.9.13 (Disable auto-update)
+  ansible.builtin.command: echo "rabbitmq-server hold" | sudo dpkg --set-selections

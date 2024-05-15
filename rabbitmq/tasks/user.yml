@@ -1,0 +1,30 @@
+---
+- name: Add a new user in RabbitMQ
+  command: rabbitmqctl add_user "{{ username }}" "{{ user_password }}"
+  ignore_errors: true
+  register: add_user_output
+
+- name: Give administrative access to the new user
+  command: rabbitmqctl set_user_tags "{{ username }}" "{{ privilege_type }}"
+  when: add_user_output.rc == 0
+
+- name: Set permissions for the new user
+  command: rabbitmqctl set_permissions -p / "{{ username }}" "{{ permission_type }}" "{{ permission_type }}" "{{ permission_type }}"
+  when: add_user_output.rc == 0
+
+- name: Check RabbitMQ user permissions for a specific user
+  shell: rabbitmqctl list_user_permissions "{{ username }}"
+  register: user_permissions_output
+
+- name: Display RabbitMQ user permissions
+  debug:
+    var: user_permissions_output.stdout_lines
+
+- name: Check the number of users in RabbitMQ
+  shell: rabbitmqctl list_users
+  register: users
+
+- name: Display RabbitMQ users
+  debug:
+    var: users.stdout
+

@@ -1,0 +1,23 @@
+---
+- name: Set Erlang repository GPG key to APT
+  ansible.builtin.shell: "{{ erlang_key }}"
+
+- name: Add official Erlang repository to APT
+  ansible.builtin.shell: >
+    echo '{{ item }}' | sudo tee -a /etc/apt/sources.list.d/rabbitmq.list > /dev/null
+  loop: "{{ erlang_repo }}"
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Erlang packages
+  ansible.builtin.apt:
+    name: "{{ item }}={{ erlang_version }}"
+    state: present
+    update_cache: yes
+  loop: "{{ erlang_packages }}"
+
+- name: Set Erlang packages to remain fixed at version 26.2.3
+  ansible.builtin.shell: echo "{{ item }} hold" | sudo dpkg --set-selections
+  loop: "{{ erlang_packages }}"

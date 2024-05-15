@@ -1,0 +1,21 @@
+# Internal Nginx Servers
+[internal_nginx]
+internal1 ansible_host=172.31.10.141
+
+# External Nginx Servers
+[external_nginx]
+external1 ansible_host=172.31.20.186
+
+# Load Balancer
+[load_balancer]
+haproxy ansible_host=172.31.10.150
+
+[redis]
+172.31.81.82
+172.31.28.179
+172.31.34.174
+
+[rabbitmq]
+172.31.81.82
+172.31.28.179
+172.31.34.174

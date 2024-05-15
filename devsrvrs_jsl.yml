@@ -1,0 +1,10 @@
+---
+- name: Install, Configure, and Manage JSL Services
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - rabbitmq
+    - redis
+    - nginx
