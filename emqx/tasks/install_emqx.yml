@@ -1,0 +1,21 @@
+---
+- name: Add EMQX APT repository
+  apt_repository:
+    repo: "deb {{ emqx_repo_url }} stable main"
+    state: present
+
+- name: Add EMQX GPG key
+  apt_key:
+    url: "{{ emqx_gpg_key_url }}"
+    state: present
+
+- name: Install EMQX
+  apt:
+    name: "emqx"
+    state: present
+
+- name: Enable and start EMQX service
+  systemd:
+    name: emqx
+    enabled: yes
+    state: started

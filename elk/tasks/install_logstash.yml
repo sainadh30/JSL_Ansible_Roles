@@ -1,0 +1,5 @@
+---
+- name: Install Logstash
+  apt:
+    name: "logstash={{ logstash_version }}"
+    state: present

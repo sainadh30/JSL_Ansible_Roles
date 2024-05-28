@@ -1,0 +1,14 @@
+---
+- name: Configure Logstash
+  template:
+    src: logstash.conf.j2
+    dest: /etc/logstash/conf.d/logstash.conf
+    owner: logstash
+    group: logstash
+    mode: 0644
+
+- name: Enable and start Logstash service
+  systemd:
+    name: logstash
+    enabled: yes
+    state: started

@@ -1,0 +1,15 @@
+---
+# vars file for kafka
+
+# Proxy Environment Variables
+## Script Paths
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+
+## Proxy Settings
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+## Kafka URL
+kafka_url: "https://archive.apache.org/dist/kafka/3.2.3/kafka_2.13-3.2.3.tgz%22"
+

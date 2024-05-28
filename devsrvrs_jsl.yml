@@ -5,6 +5,13 @@
   gather_facts: yes
 
   roles:
-    - rabbitmq
-    - redis
-    - nginx
+    # - rabbitmq
+    # - redis
+    # - mongodb
+    # - nginx
+    # - emqx
+    # - cassandra
+    # - kafka
+    # - spark
+    # - airflow
+    - elk

@@ -1,0 +1,13 @@
+[Unit]
+Description=Apache Spark Slave
+After=network.target
+
+[Service]
+Type=forking
+User={{ owner_name }}
+Group={{ group_name }}
+ExecStart=/opt/spark/sbin/start-slave.sh spark://{{ master_host }}:7077
+ExecStop=/opt/spark/sbin/stop-slave.sh
+
+[Install]
+WantedBy=multi-user.target

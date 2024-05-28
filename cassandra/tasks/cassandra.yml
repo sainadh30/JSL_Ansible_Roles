@@ -1,0 +1,63 @@
+
+# - name: Import Apache Cassandra repository key
+#   ansible.builtin.apt_key:
+#     url: "{{ cassandra_key }}"
+#     state: present
+
+# - name: Check if Cassandra Repository file exists
+#   ansible.builtin.stat:
+#     path: "{{ cassandra_repo_path }}"
+#   register: cassandra_repo_stat
+
+# - name: Add Cassandra Repository to System
+#   ansible.builtin.lineinfile:
+#     path: "{{ cassandra_repo_path }}"
+#     line: "{{ cassandra_repo }}"
+#     create: yes
+#   when: not cassandra_repo_stat.stat.exists
+
+- name: Download Apache Cassandra keys
+  ansible.builtin.shell:
+    cmd: "curl -o {{ cassandra_keyring_path }} {{ cassandra_keys_url }}"
+
+- name: Add Cassandra repository to sources.list.d
+  ansible.builtin.shell:
+    cmd: "echo 'deb [signed-by={{ cassandra_keyring_path }}] {{ cassandra_repo_url }} {{ cassandra_repo_version }} main' | sudo tee -a {{ cassandra_sources_list_path }}"
+
+- name: Update APT Repository Cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Cassandra
+  ansible.builtin.apt:
+    name: cassandra
+    state: present
+
+- name: Start and Enable Cassandra service
+  ansible.builtin.systemd:
+    name: cassandra
+    state: started
+    enabled: yes
+
+- name: Check Status of Cassandra Service
+  ansible.builtin.systemd:
+    name: cassandra
+    state: started
+  register: cassandra_status
+
+- name: Display Cassandra service status
+  ansible.builtin.debug:
+    msg: "{{ ansible_hostname }} : {{ ansible_host }} - Cassandra Service is {{ 'Running' if cassandra_status.state == 'started' else 'Not Running'}}"
+
+- name: Set Cassandra Package to Remain Fixed at a specific version (Disable auto-update)
+  ansible.builtin.command:
+    cmd: echo "cassandra hold" | sudo dpkg --set-selections
+
+- name: Check Status of Cassandra using nodetool
+  ansible.builtin.shell:
+    cmd: "nodetool status"
+  register: nodetool_status
+
+- name: Display nodetool status
+  ansible.builtin.debug:
+    msg: "{{ ansible_hostname }} : {{ ansible_host }} - Cassandra Node Tool Status: {{ nodetool_status.stdout }}"

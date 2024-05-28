@@ -1,0 +1,40 @@
+- name: Check if mongod.conf file exists r not
+  ansible.builtin.stat:
+    path: "{{ mongodconf_path }}"
+  register: conf_file_stat
+
+- name: Store current block content of /etc/mongod.conf file
+  ansible.builtin.shell:
+    cmd: cat "{{ mongodconf_path }}"
+  register: conf_block_content
+  when: conf_file_stat.stat.exists
+
+- name: Create mongod.conf file
+  ansible.builtin.template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+  when: conf_file_stat.stat.exists
+
+- name: Store the new block content of /etc/mongod.conf
+  ansible.builtin.shell:
+    cmd: cat "{{ mongodconf_path }}"
+  register: conf_result
+
+- name: Back Up /etc/mongod.conf file if content changes
+  ansible.builtin.copy:
+    content: "{{ conf_block_content.stdout }}"
+    dest: "{{ mongodconf_path }}_{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}_{{ ansible_date_time.minute }}.bkp"
+    remote_src: yes
+  when:
+    - conf_file_stat.stat.exists
+    - conf_block_content.stdout != conf_result.stdout
+
+- name: Create mongod.conf file
+  ansible.builtin.template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+
+- name: Restart the mongod service
+  ansible.builtin.service:
+    name: mongod
+    state: restarted

@@ -1,0 +1,16 @@
+- name: Download Apache Spark
+  get_url:
+    url: "{{ spark_download_url }}"
+    dest: /opt/{{ spark_package }}.tgz
+
+- name: Extract Spark archive
+  unarchive:
+    src: /opt/{{ spark_package }}.tgz
+    dest: /opt
+    remote_src: yes
+
+- name: Create symbolic link for Spark
+  file:
+    src: "/opt/{{ spark_package }}"
+    dest: "{{ spark_home }}"
+    state: link

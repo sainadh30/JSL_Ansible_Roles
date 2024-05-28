@@ -1,0 +1,19 @@
+- name: Add deadsnakes PPA for Python
+  apt_repository:
+    repo: ppa:deadsnakes/ppa
+    state: present
+
+- name: Install Python
+  apt:
+    name: "python{{ python_version }}"
+    state: present
+
+- name: Install pip for Python
+  apt:
+    name: "python3-pip"
+    state: present
+
+- name: Install PySpark using pip
+  pip:
+    name: "pyspark=={{ pyspark_version }}"
+    executable: "pip3"

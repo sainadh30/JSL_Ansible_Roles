@@ -1,0 +1,68 @@
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages_to_install }}"
+
+- name: Install Python packages
+  apt:
+    name: "{{ python_packages_to_install }}"
+    state: present
+
+- name: Install pymongo using pip
+  pip:
+    name: "{{ python_packages_to_install_pip }}"
+    state: present
+    executable: pip3
+
+- name: Check if MongoDB Repository GPG Key file exists
+  ansible.builtin.stat:
+    path: "{{ gpg_path }}"
+  register: mongodb_key_stat
+
+- name: Add MongoDB Repository GPG Key
+  ansible.builtin.shell:
+    cmd: "{{ gpg_key }}"
+  when: not mongodb_key_stat.stat.exists
+
+- name: Check if MongoDB Repository file exists
+  ansible.builtin.stat:
+    path: "{{ mongodb_repo_path }}"
+  register: mongodb_repo_stat
+
+- name: Add MongoDB Repository to System
+  ansible.builtin.lineinfile:
+    path: "{{ mongodb_repo_path }}"
+    line: "{{ mongodb_repo }}"
+    create: yes
+  when: not mongodb_repo_stat.stat.exists
+
+- name: Update MongoDB Repository
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install MongoDB
+  ansible.builtin.apt:
+    name: mongodb-org
+    state: present
+
+- name: Hold MongoDB packages
+  ansible.builtin.shell:
+    cmd: "echo '{{ item }} hold' | sudo dpkg --set-selections"
+  loop: "{{ mongodb_packages_to_hold }}"
+
+- name: Start and Enable MongoDB service
+  ansible.builtin.systemd:
+    name: mongod
+    state: started
+    enabled: yes
+
+- name: Check Status of MongoDB Service
+  ansible.builtin.systemd:
+    name: mongod
+    state: started
+  register: mongodb_status
+
+- name: Display MongoDB service status
+  ansible.builtin.debug:
+    msg: "{{ ansible_hostname }} : {{ ansible_host }} - MongoDB Service is  {{ 'Running' if mongodb_status.state == 'started' else 'Not Running'}}"

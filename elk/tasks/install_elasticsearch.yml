@@ -1,0 +1,32 @@
+# tasks/elasticsearch.yml
+---
+- name: Check if Elasticsearch Repository GPG Key file exists
+  ansible.builtin.stat:
+    path: "{{ elastic_gpg_path }}"
+  register: elastic_key_stat
+
+- name: Add Elasticsearch Repository GPG Key
+  ansible.builtin.shell:
+    cmd: "{{ elastic_gpg_key }}"
+  when: not elastic_key_stat.stat.exists
+
+- name: Check if Elasticsearch Repository file exists
+  ansible.builtin.stat:
+    path: "{{ elastic_repo_path }}"
+  register: elastic_repo_stat
+
+- name: Add Elasticsearch Repository to System
+  ansible.builtin.lineinfile:
+    path: "{{ elastic_repo_list }}"
+    line: "{{ elastic_repo }}"
+    create: yes
+  when: not elastic_repo_stat.stat.exists
+  
+- name: Update ElasticSearch Repository
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Elasticsearch
+  apt:
+    name: elasticsearch
+    state: present

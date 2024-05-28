@@ -1,0 +1,19 @@
+- name: Install OpenJDK
+  ansible.builtin.apt:
+    name: "{{ openjdk_version }}"
+    state: present
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages_to_install }}"
+
+- name: Run command to check Java version
+  ansible.builtin.command: java -version
+  register: java_version
+  ignore_errors: yes
+
+- name: Check which version of OpenJDK is installed
+  ansible.builtin.debug:
+    msg: "Installed OpenJDK version: {{ java_version.stderr }}"

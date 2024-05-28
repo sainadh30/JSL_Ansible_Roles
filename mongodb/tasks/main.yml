@@ -1,0 +1,17 @@
+---
+# tasks file for mongodb
+
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+# - name: Install MongoDB
+#   include_tasks: mongodb.yml
+
+# - name: Create MongoDB Conf File
+#   include_tasks: conf.yml
+
+# - name: Deploy a Replica Set
+#   include_tasks: replica_set.yml
+
+- name: Create MongoDB Users
+  include_tasks: user.yml

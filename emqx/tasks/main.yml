@@ -1,0 +1,11 @@
+---
+# tasks file for emqx
+
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+- name: Install EMQX
+  include_tasks: install_emqx.yml
+
+- name: Configure EMQX
+  include_tasks: configure_emqx.yml

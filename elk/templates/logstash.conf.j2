@@ -1,0 +1,79 @@
+---
+input {
+    tcp {
+        port => 5044
+        host => "{{ logstash_host }}"
+        type => "cloud_log"
+    }
+
+    tcp {
+        port => 5045
+        host => "{{ logstash_host }}"
+        type => "gtw_log"
+    }
+
+    udp {
+        port => 5045
+        host => "{{ logstash_host }}"
+        type => "gtw_log"
+    }
+}
+
+output {
+    if [type] == "cloud_log" {
+        elasticsearch {
+            hosts => {{ elasticsearch_hosts | to_json }}
+            template_name => "logstash-cloud"
+            ilm_rollover_alias => "logstash-cloud"
+            ilm_pattern => "{now/d}-000001"
+            ilm_policy => "logstash-cloud-policy"
+        }
+    }
+    if [type] == "gtw_log" {
+        elasticsearch {
+            hosts => {{ elasticsearch_hosts | to_json }}
+            index => "logstash-gtw-%{+yyyy.MM.dd}"
+            template_name => "logstash-gtw"
+            ilm_rollover_alias => "logstash-gtw"
+            ilm_pattern => "{now/d}-000001"
+            ilm_policy => "gtw_logs_policy"
+        }
+    }
+}
+
+filter {
+    if [type] == "cloud_log" {
+        json {
+            source => "message"
+            target => "parsedJson"
+            remove_field => ["message"]
+        }
+        mutate {
+            add_field => {
+                "level" => "%{[parsedJson][level]}"
+                "label" => "%{[parsedJson][label]}"
+                "message" => "%{[parsedJson][message]}"
+                "process_id" => "%{[parsedJson][pid]}"
+            }
+        }
+        kv {
+            source => label
+            field_split_pattern => ",\\s*"
+            value_split => ":"
+        }
+        json {
+            source => "message"
+            target => "logMessageParsed"
+        }
+        mutate {
+            add_field => {
+                "log_message" => "%{[logMessageParsed][data]}"
+            }
+            rename => {
+                "Host" => "cloud_domain"
+                "instance ID" => "instance_id"
+            }
+            remove_field => ["message", "parsedJson", "logMessageParsed", "tags", "label", "port", "host"]
+        }
+    }
+}

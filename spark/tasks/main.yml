@@ -1,0 +1,23 @@
+---
+# tasks file for spark
+
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+- name: Install JAVA(OpenJDK)
+  include_tasks: java.yml
+
+- name: Download Spark
+  include_tasks: spark.yml
+
+- name: Install Pyspark
+  include_tasks: pyspark.yml
+
+- name: Set Environmental Variables
+  include_tasks: env.yml
+
+- name: Change ownership directory
+  include_tasks: ownership.yml
+
+- name: Create Systemd Service Files
+  include_tasks: systemd.yml

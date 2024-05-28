@@ -1,0 +1,61 @@
+---
+# vars file for spark
+
+# Proxy Environment Variables
+## Script Paths
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+
+## Proxy Settings
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+# Spark Nodes
+master_host: "172.31.10.225"
+worker_host: "172.31.20.244"
+
+# JAVA Version
+openjdk_version: openjdk-11-jdk
+
+# Packages to install
+packages_to_install:
+  - curl
+  - mlocate
+  - git
+  - scala
+  - gnupg2
+  - wget
+  - unzip
+  - apt-transport-https
+  - software-properties-common
+
+# Spark Version
+spark_version: 3.0.3
+
+# Hadoop Version
+hadoop_version: 2.7
+
+# Spark Package
+spark_package: "spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}"
+
+# Spark Download URL
+spark_download_url: "https://archive.apache.org/dist/spark/spark-{{ spark_version }}/{{ spark_package }}.tgz"
+
+# Java Home
+java_home: "/usr/lib/jvm/java-{{ openjdk_version }}-openjdk-amd64"
+
+# Spark Home Path
+spark_home: "/opt/spark"
+
+# Python Version
+python_version: 3.7
+
+# PySpark Version
+pyspark_version: "{{ spark_version }}"
+
+# Pyspark Home Path
+pyspark_home: "/usr/bin/python3"
+
+# Ownership of Spark Path
+owner_name: "smartliving"
+group_name: "smartliving"

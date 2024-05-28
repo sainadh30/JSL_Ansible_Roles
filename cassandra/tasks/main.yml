@@ -1,0 +1,12 @@
+---
+# tasks file for bds
+
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+- name: Install JAVA(OpenJDK)
+  include_tasks: java.yml
+
+- name: Install Cassandra
+  include_tasks: cassandra.yml
+

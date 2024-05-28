@@ -1,0 +1,29 @@
+- name: Create Systemd Service File for Spark Master
+  template:
+    src: spark-master.service.j2
+    dest: /etc/systemd/system/spark-master.service
+  delegate_to: "{{ master_host }}"
+
+- name: Create Systemd Service File for Spark Slave
+  template:
+    src: spark-slave.service.j2
+    dest: /etc/systemd/system/spark-slave.service
+  delegate_to: "{{ worker_host }}"
+
+- name: Reload Systemd daemon
+  systemd:
+    daemon_reload: yes
+  delegate_to: "{{ master_host }}"
+
+- name: Start and Enable Spark Master Service
+  systemd:
+    name: spark-master
+    state: started
+    enabled: yes
+  delegate_to: "{{ master_host }}"
+
+- name: Start Spark Slave Service
+  systemd:
+    name: spark-slave
+    state: started
+  delegate_to: "{{ worker_host }}"

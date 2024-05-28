@@ -1,0 +1,40 @@
+- name: Configure Replica Set in MongoDB - Configure Replica Set
+  community.mongodb.mongodb_replicaset:
+    login_database: "{{ mongodb_admin_auth_database }}"
+    replica_set: "{{ mongo_replset_name }}"  
+    members:
+      - _id: 0
+        host: "{{ MONGO_MASTER_IP }}:{{ mongodb_port }}"
+      - _id: 1
+        host: "{{ MONGO_SLAVE_IP }}:{{ mongodb_port }}"
+      - _id: 2
+        host: "{{ MONGO_ARBITER_IP }}:{{ mongodb_port }}"
+    arbiter_at_index: 2
+  run_once: true
+  delegate_to: "{{ MONGO_MASTER_IP }}"
+
+- name: Check the replica set configuration
+  ansible.builtin.shell:
+    cmd: "mongosh --eval 'rs.conf()'"
+  register: replset_config
+  delegate_to: "{{ MONGO_MASTER_IP }}"
+
+- name: Display the replica set configuration
+  ansible.builtin.debug:
+    msg: |
+      Replica Set Configuration:
+      {{ replset_config.stdout }}
+  delegate_to: "{{ MONGO_MASTER_IP }}"
+
+- name: Check the replica set status
+  ansible.builtin.shell:
+    cmd: "mongosh --eval 'rs.status()'"
+  register: replset_status
+  delegate_to: "{{ MONGO_MASTER_IP }}"
+
+- name: Display the replica set status
+  ansible.builtin.debug:
+    msg: |
+      Replica Set Status:
+      {{ replset_status.stdout }}
+  delegate_to: "{{ MONGO_MASTER_IP }}"

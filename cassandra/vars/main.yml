@@ -1,0 +1,40 @@
+---
+# vars file for bds
+# Big Data Systems (BDS) Configuration
+
+# Proxy Environment Variables
+## Script Paths
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+
+## Proxy Settings
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+# Cassandra Nodes
+cassandra-01: 172.31.10.106
+cassandra-02: 172.31.20.202
+
+# JAVA Version
+openjdk_version: openjdk-11-jdk
+
+# Packages to install
+packages_to_install:
+  - gnupg2
+  - wget
+  - curl
+  - unzip
+  - apt-transport-https
+
+# Import Apache Cassandra repository keys
+# cassandra_key: "https://www.apache.org/dist/cassandra/KEYS"
+
+# Add Apache Cassandra repository to sources list
+# cassandra_repo_path: "/etc/apt/sources.list.d/cassandra.list"
+# cassandra_repo: "sudo sh -c 'echo \"deb http://www.apache.org/dist/cassandra/debian 311x main\" > /etc/apt/sources.list.d/cassandra.list'"
+
+cassandra_keys_url: "https://downloads.apache.org/cassandra/KEYS"
+cassandra_repo_url: "https://debian.cassandra.apache.org"
+cassandra_repo_version: "41x"
+cassandra_keyring_path: "/etc/apt/keyrings/apache-cassandra.asc"
+cassandra_sources_list_path: "/etc/apt/sources.list.d/cassandra.sources.list"

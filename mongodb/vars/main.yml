@@ -1,0 +1,72 @@
+---
+# vars file for mongodb
+
+# MongoDB Configuration
+mongo_replset_name: "rs0"
+MONGO_MASTER_IP: "172.31.10.225"
+MONGO_SLAVE_IP: "172.31.20.244"
+MONGO_ARBITER_IP: "172.31.10.116"
+
+# MongoDB Ports
+mongodb_port: "27017"
+
+# Proxy Environment Variables
+## Script Paths
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+
+## Proxy Settings
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+# Packages to Install
+packages_to_install:
+  - gnupg2
+  - wget
+  - curl
+  - unzip
+  - apt-transport-https
+
+# Packages to Install
+python_packages_to_install:
+  - python3-pip
+
+# Python packages to Install using pip
+python_packages_to_install_pip:
+  - pymongo
+
+# MongoDB GPG Key
+gpg_path: "/usr/share/keyrings/mongodb-server-7.0.gpg"
+gpg_key: "curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor"
+
+# MongoDB Repository Configuration
+mongodb_repo_path: "/etc/apt/sources.list.d/mongodb-org-7.0.list"
+mongodb_repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list"
+
+# Packages to Hold
+mongodb_packages_to_hold:
+  - mongodb-org
+  - mongodb-org-database
+  - mongodb-org-server
+  - mongodb-mongosh
+  - mongodb-org-mongos
+  - mongodb-org-tools
+
+# MongoD Configuration Path
+mongodconf_path: "/etc/mongod.conf"
+
+# MongoDb Root User 
+mongodb_admin_auth_database: "admin"
+mongodb_admin_user: "myUser"
+mongodb_admin_password: "Mongo@123"
+
+# MongoDB OBLO User
+oblo_admin_user: "oblo"
+oblo_admin_password: "Oblo@123"
+
+# Roles for Obloadmin user
+oblo_admin_roles:
+  - role: readWriteAnyDatabase
+  - role: dbAdminAnyDatabase
+  - role: userAdminAnyDatabase
+  - role: clusterManager

@@ -1,0 +1,26 @@
+---
+# tasks file for elk
+
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+- name: Install and configure Java
+  include_tasks: java.yml
+
+- name: Install and configure Elasticsearch
+  include_tasks: install_elasticsearch.yml
+
+- name: Configure Elasticsearch
+  include_tasks: configure_elasticsearch.yml
+
+# - name: Install and configure Kibana
+#   include_tasks: install_kibana.yml
+
+# - name: Configure Kibana
+#   include_tasks: configure_kibana.yml
+
+# - name: Install and configure Logstash
+#   include_tasks: install_logstash.yml
+
+# - name: Configure Logstash
+#   include_tasks: configure_logstash.yml

@@ -1,0 +1,30 @@
+- name: Check the Primary Node
+  ansible.builtin.shell:
+    cmd: "mongosh --eval 'rs.isMaster().primary'"
+  register: primary_node
+
+- name: Display the Primary Node 
+  ansible.builtin.debug:
+    msg: "{{ primary_node.stdout | regex_search('\\d+\\.\\d+\\.\\d+\\.\\d+') }}"    
+  register: primarynode
+
+- name: Create MongoDB root user
+  community.mongodb.mongodb_user:
+    database: "{{ mongodb_admin_auth_database }}"
+    name: "{{ mongodb_admin_user }}"
+    password: "{{ mongodb_admin_password }}"
+    roles: ["root"]
+    state: present
+  run_once: true
+  delegate_to: "{{ primarynode.msg }}" 
+
+- name: Create Obloadmin user
+  community.mongodb.mongodb_user:
+    database: "{{ mongodb_admin_auth_database }}"
+    name: "{{ oblo_admin_user }}"
+    password: "{{ oblo_admin_password }}"
+    roles: "{{ item.role }}"
+    state: present
+  loop: "{{ oblo_admin_roles }}"
+  run_once: true
+  delegate_to: "{{ primarynode.msg }}"

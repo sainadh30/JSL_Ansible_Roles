@@ -1,0 +1,14 @@
+---
+- name: Configure EMQX
+  template:
+    src: emqx.conf.j2
+    dest: /etc/emqx/emqx.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart emqx
+
+- name: Restart EMQX service
+  systemd:
+    name: emqx
+    state: restarted

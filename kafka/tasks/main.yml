@@ -1,0 +1,11 @@
+---
+# tasks file for kafka
+
+# - name: SetUp Proxy
+#   include_tasks: proxy.yml
+
+- name: User create & Install Kafka
+  include_tasks: kafka.yml
+
+# - name: Systemd Unit Files for Zookeeper and Kafka
+#   include_tasks: systemd..yml

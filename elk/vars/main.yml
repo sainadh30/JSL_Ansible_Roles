@@ -1,0 +1,51 @@
+---
+# vars file for ELK
+
+# Proxy Environment Variables
+## Script Paths
+proxy_path: "/etc/profile.d/proxy.sh"
+apt_path: "/etc/apt/apt.conf.d/80proxy"
+wget_path: "wgetrc"
+
+## Proxy Settings
+PROXY_ADDRESS: "http://172.168.10.28:3128"
+
+# Elasticsearch key URL
+elastic_gpg_path: "/usr/share/keyrings/elastic.gpg"
+elastic_gpg_key: "curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elastic.gpg"
+elastic_repo_path: "/etc/apt/sources.list.d/elastic.list"
+elastic_repo_list: "/etc/apt/sources.list.d/elastic-7.x.list"
+elastic_repo: "deb [signed-by=/usr/share/keyrings/elastic.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main"
+
+# Packages to install
+packages_to_install:
+  - curl
+  - mlocate
+  - git
+  - gnupg2
+  - wget
+  - unzip
+  - apt-transport-https
+  - software-properties-common
+
+# JAVA Version
+openjdk_version: "openjdk-8-jdk"
+
+# Elasticsearch Configuration
+elasticsearch_version: "8.7.0"
+elasticsearch_hosts: 
+  - "172.31.10.225"
+  - "172.31.20.244"
+cluster_name: "es-cluster"
+node_name: "node-1"
+network_host: "172.31.10.225"
+http_port: 9200
+
+# Logstash Configuration
+logstash_version: "1:8.7.0-1"
+logstash_host: "172.31.10.225"
+
+# Kibana Configuration
+kibana_version: "8.7.0"
+kibana_host: "172.31.10.225"
+kibana_port: 5601

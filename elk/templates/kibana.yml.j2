@@ -1,0 +1,19 @@
+---
+server.port: {{ kibana_port }}
+server.host: "{{ kibana_host }}"
+elasticsearch.hosts: {{ elasticsearch_hosts | to_json }}
+server.basePath: "/kibana"
+server.rewriteBasePath: true
+elasticsearch.ssl.verificationMode: none
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /var/log/kibana/kibana.log
+      layout:
+        type: json
+  root:
+    appenders:
+      - default
+      - file
+pid.file: /run/kibana/kibana.pid

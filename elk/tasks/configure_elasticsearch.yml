@@ -1,0 +1,33 @@
+---
+- name: Configure Elasticsearch
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configure systemd service
+  copy:
+    src: elasticsearch.service
+    dest: /usr/lib/systemd/system/elasticsearch.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Set memory lock limit
+  copy:
+    src: limits.conf
+    dest: /etc/security/limits.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable and start Elasticsearch service
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: started
+
+- name: Reload systemd daemon
+  command: systemctl daemon-reload

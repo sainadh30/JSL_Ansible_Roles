@@ -1,0 +1,7 @@
+- name: Change ownership of /opt/spark directory
+  become: true
+  file:
+    path: "{{ spark_home }}"
+    owner: "{{ owner_name }}"
+    group: "{{ group_name }}"
+    recurse: yes
