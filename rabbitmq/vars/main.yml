@@ -8,7 +8,7 @@ PROXY_ADDRESS: "http://172.168.10.28:3128"
 
 # RabbitMQ Repository GPG Key
 gpg_key:
-  - "curl -1sLf 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf77f1eda57ebb1cc' | sudo gpg --dearmor | sudo tee /usr/share/keyrings/net.launchpad.ppa.rabbitmq.erlang.gpg > /dev/null"
+  - "curl -1sLf 'https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA' | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.rabbitmq.team.gpg > /dev/null"
   - "curl -1sLf 'https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey' | sudo gpg --dearmor | sudo tee /usr/share/keyrings/io.packagecloud.rabbitmq.gpg > /dev/null"
 
 # RabbitMQ Repository Key
@@ -28,10 +28,10 @@ erlang_repo:
 erlang_version: '1:26.2.3*'
 
 # RabbitMQ Node Private IPs
-RABBIT_MASTER_IP: '172.31.85.223'
+RABBIT_MASTER_IP: '172.31.10.206'
 RABBIT_SLAVE_IP: 
-  - '172.31.35.140'
-  - '172.31.10.150'
+  - '172.31.20.162'
+  - '172.31.10.31'
 
 # User values
 username: 'test'
@@ -41,37 +41,36 @@ permission_type: '.*'
 
 # Erlang Packages
 erlang_packages:
-  - erlang
-  - erlang-dev
-  - erlang-asn1
-  - erlang-common-test
-  - erlang-crypto
-  - erlang-debugger
-  - erlang-dialyzer
-  - erlang-diameter
-  - erlang-edoc
-  - erlang-eldap
-  - erlang-erl-docgen
-  - erlang-et
-  - erlang-eunit
-  - erlang-ftp
-  - erlang-inets
-  - erlang-megaco
-  - erlang-mnesia
-  - erlang-observer
-  - erlang-odbc
-  - erlang-os-mon
-  - erlang-parsetools
-  - erlang-public-key
-  - erlang-reltool
-  - erlang-runtime-tools
-  - erlang-snmp
-  - erlang-ssh
-  - erlang-ssl
-  - erlang-syntax-tools
-  - erlang-tftp
-  - erlang-tools
-  - erlang-wx
-  - erlang-xmerl
-  - erlang-src
-  - erlang-examples
+    - erlang-base
+    - erlang-dev
+    - erlang-asn1
+    - erlang-common-test
+    - erlang-crypto
+    - erlang-debugger
+    - erlang-dialyzer
+    - erlang-diameter
+    - erlang-edoc
+    - erlang-eldap
+    - erlang-erl-docgen
+    - erlang-et
+    - erlang-eunit
+    - erlang-ftp
+    - erlang-inets
+    - erlang-megaco
+    - erlang-mnesia
+    - erlang-observer
+    - erlang-odbc
+    - erlang-os-mon
+    - erlang-parsetools
+    - erlang-public-key
+    - erlang-reltool
+    - erlang-runtime-tools
+    - erlang-snmp
+    - erlang-ssh
+    - erlang-ssl
+    - erlang-syntax-tools
+    - erlang-tftp
+    - erlang-tools
+    - erlang-wx
+    - erlang-xmerl
+    - erlang

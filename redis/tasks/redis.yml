@@ -1,25 +1,62 @@
----
 - name: Check if Redis Repository GPG Key file exists
   ansible.builtin.stat:
     path: "{{ gpg_path }}"
   register: redis_key_stat
 
+- name: Store current content of Redis Repository GPG Key file
+  ansible.builtin.shell:
+    cmd: cat "{{ gpg_path }}"
+  register: gpg_block_content
+  when: redis_key_stat.stat.exists
+
 - name: Add Redis Repository GPG Key
   ansible.builtin.shell:
     cmd: "{{ gpg_key }}"
-  when: not redis_key_stat.stat.exists
+
+- name: Store the new content of Redis Repository GPG Key file
+  ansible.builtin.shell:
+    cmd: cat "{{ gpg_path }}"
+  register: redis_gpg_result
+
+- name: Back Up GPG Key file if content changes
+  ansible.builtin.copy:
+    content: "{{ gpg_block_content.stdout }}"
+    dest: "{{ gpg_path }}_{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}_{{ ansible_date_time.minute }}.bkp"
+    remote_src: yes
+  when:
+    - redis_key_stat.stat.exists
+    - gpg_block_content.stdout != redis_gpg_result.stdout
 
 - name: Check if Redis Repository file exists
   ansible.builtin.stat:
     path: "{{ redis_repo_path }}"
   register: redis_repo_stat
 
+- name: Store current content of Redis Repository file
+  ansible.builtin.shell:
+    cmd: cat "{{ redis_repo_path }}"
+  register: repo_block_content
+  when: redis_repo_stat.stat.exists
+
 - name: Add Redis Repository to System
   ansible.builtin.lineinfile:
     path: "{{ redis_repo_path }}"
     line: "{{ redis_repo }}"
     create: yes
-  when: not redis_repo_stat.stat.exists
+
+- name: Store the new content of Redis Repository file
+  ansible.builtin.shell:
+    cmd: cat "{{ redis_repo_path }}"
+  register: redis_repo_result
+
+- name: Back Up Repository file if content changes
+  ansible.builtin.copy:
+    content: "{{ repo_block_content.stdout }}"
+    dest: "{{ redis_repo_path }}_{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}_{{ ansible_date_time.minute }}.bkp"
+    remote_src: yes
+  when:
+    - redis_repo_stat.stat.exists
+    - repo_block_content.stdout != redis_repo_result.stdout
 
 - name: Update Redis Repository
   ansible.builtin.apt:
@@ -44,7 +81,7 @@
 
 - name: Display Redis service status
   ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} : {{ ansible_host }} - Redis Service is  {{ 'Running' if redis_status.state == 'started' else 'Not Running'}}"
+    msg: "{{ ansible_hostname }} : {{ ansible_host }} - Redis Service is {{ 'Running' if redis_status.state == 'started' else 'Not Running' }}"
 
 - name: Set Redis Package to Remain Fixed at v7.2.4 (Disable auto-update)
   ansible.builtin.command:

@@ -2,14 +2,12 @@
   ansible.builtin.stat:
     path: /etc/redis/redis.conf
   register: redis_file_stat
-  delegate_to: "{{ redis_master }}"
 
 - name: Store current block content of /etc/redis/redis.conf
   ansible.builtin.shell:
     cmd: cat /etc/redis/redis.conf
   register: redis_block_content
   when: redis_file_stat.stat.exists
-  delegate_to: "{{ redis_master }}"
 
 - name: Uncomment and edit Redis configurations
   ansible.builtin.lineinfile:
@@ -21,13 +19,11 @@
     - { regexp: 'bind', line: "bind 0.0.0.0" }
     - { regexp: 'requirepass', line: "requirepass {{ redis_master_password }}" }
     - { regexp: 'masterauth', line: "masterauth {{ redis_master_password }}" }
-  delegate_to: "{{ redis_master }}"
 
 - name: Store the new block content of /etc/redis/redis.conf
   ansible.builtin.shell:
     cmd: cat /etc/redis/redis.conf
   register: redis_blockinfile_result
-  delegate_to: "{{ redis_master }}"
 
 - name: Backup Redis configuration file
   ansible.builtin.copy:
@@ -37,10 +33,8 @@
   when:
     - redis_file_stat.stat.exists
     - redis_block_content.stdout != redis_blockinfile_result.stdout
-  delegate_to: "{{ redis_master }}"
 
 - name: Restart Redis service
   ansible.builtin.service:
     name: redis-server
     state: restarted
-  delegate_to: "{{ redis_master }}"

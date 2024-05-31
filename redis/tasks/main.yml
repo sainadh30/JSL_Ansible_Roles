@@ -12,13 +12,11 @@
 
 - name: Configure Redis on Master Node
   include_tasks: masterconf.yml
+  when: "'RedisMaster' in group_names"
 
-- name: Configure Redis on Replica Node (Slave01)
-  include_tasks: slave1conf.yml
-
-- name: Configure Redis on Replica Node (Slave02)
-  include_tasks: slave2conf.yml
+- name: Configure Redis on Replica Nodes 
+  include_tasks: slaveconf.yml
+  when: "'RedisSlave' in group_names"
 
 - name: Configure Redis Sentinel
   include_tasks: sentinelconf.yml
-

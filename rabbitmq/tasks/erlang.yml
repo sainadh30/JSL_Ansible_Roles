@@ -13,7 +13,7 @@
 
 - name: Install Erlang packages
   ansible.builtin.apt:
-    name: "{{ item }}={{ erlang_version }}"
+    name: "{{ item }}"
     state: present
     update_cache: yes
   loop: "{{ erlang_packages }}"
