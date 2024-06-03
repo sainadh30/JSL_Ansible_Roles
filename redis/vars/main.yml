@@ -13,7 +13,7 @@ gpg_key: "curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/
 
 # Nginx Repository Configuration
 redis_repo_path: "/etc/apt/sources.list.d/redis.list"
-redis_repo: "deb [-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_distribution_release }} main | sudo tee /etc/apt/sources.list.d/redis.list"
+redis_repo: "deb [-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_distribution_release }} main"
 
 # Redis master, slaves hostname
 redis_master: "172.31.10.151"
