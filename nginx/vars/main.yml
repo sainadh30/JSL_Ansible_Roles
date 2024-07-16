@@ -8,13 +8,35 @@ wget_path: "wgetrc"
 PROXY_ADDRESS: "http://172.168.10.28:3128"
 
 # GPG Key Configuration
-gpg_path: "/usr/share/keyrings/redis-archive-keyring.gpg"
-gpg_key: "curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null"
-
+#gpg_path: "/usr/share/keyrings/redis-archive-keyring.gpg"
+#gpg_key: "curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null"
+#
 # Nginx Repository Configuration
-nginx_repo_path: "/etc/apt/sources.list.d/nginx.list"
-nginx_repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx | sudo tee /etc/apt/sources.list.d/nginx.list"
+#nginx_repo_path: "/etc/apt/sources.list.d/nginx.list"
+#nginx_repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx
+ | sudo tee /etc/apt/sources.list.d/nginx.list"
+#
+#internal_nginx: '172.31.10.141'
+#external_nginx: '172.31.20.186'
+#haproxy: '172.31.10.150'
 
-internal_nginx: '172.31.10.141'
-external_nginx: '172.31.20.186'
-haproxy: '172.31.10.150'
+packages_to_install:
+  - curl
+  - gnupg2
+  - ca-certificates
+  - lsb-release
+  - ubuntu-keyring
+
+nginx_version: "1.22.1-1~focal"
+nginx_signing_key_url: "https://nginx.org/keys/nginx_signing.key"
+nginx_keyring_path: "/usr/share/keyrings/nginx-archive-keyring.gpg"
+nginx_repo_file: "/etc/apt/sources.list.d/nginx.list"
+nginx_backup_file: "/etc/apt/sources.list.d/nginx.list.bak"
+#nginx_repo_type: "mainline"
+nginx_repo_url: "http://nginx.org/packages/ubuntu {{ ansible_distribution_release }} nginx"
+nginx_pin_file: "/etc/apt/preferences.d/99nginx"
+nginx_pin: |
+  Package: *
+  Pin: origin nginx.org
+  Pin: release o=nginx
+  Pin-Priority: 900
