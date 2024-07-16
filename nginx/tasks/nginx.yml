@@ -1,54 +1,68 @@
 ---
-- name: Check if Nginx Repository GPG Key file exists
-  ansible.builtin.stat:
-    path: "{{ gpg_path }}"
-  register: nginx_key_stat
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name: "{{ packages_to_install }}"
+    state: present
+    update_cache: yes
 
-- name: Add Nginx Repository GPG Key
+- name: Backup existing Nginx repository file
   ansible.builtin.shell:
-    cmd: "{{ gpg_key }}"
-  when: not nginx_key_stat.stat.exists
+    cmd: "cp {{ nginx_repo_file }} {{ nginx_backup_file }}"
+  args:
+    creates: "{{ nginx_backup_file }}"
+  changed_when: false
+  ignore_errors: yes
 
-- name: Check if Nginx Repository file exists
-  ansible.builtin.stat:
-    path: "{{ nginx_repo_path }}"
-  register: nginx_repo_stat
+- name: Import Nginx signing key
+  ansible.builtin.command:
+    cmd: curl -fsSL {{ nginx_signing_key_url }} | sudo gpg --dearmor -o {{ nginx_keyring_path }}
+  args:
+    creates: "{{ nginx_keyring_path }}"
 
-- name: Add Nginx Repository to System
-  ansible.builtin.lineinfile:
-    path: "{{ nginx_repo_path }}"
-    line: "{{ nginx_repo }}"
-    create: yes
-  when: not nginx_repo_stat.stat.exists
+- name: Verify Nginx signing key
+  ansible.builtin.command:
+    cmd: gpg --dry-run --quiet --no-keyring --import --import-options import-show {{ nginx_keyring_path }}
+  register: gpg_key_check
 
-- name: Update package cache
+- name: Ensure the Nginx signing key is correct
+  ansible.builtin.assert:
+    that:
+      - "'573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62' in gpg_key_check.stdout"
+    fail_msg: "Nginx signing key fingerprint does not match."
+
+- name: Generate Nginx repository file
+  ansible.builtin.copy:
+    content: |
+      deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] {{ nginx_repo_url }}
+    dest: "{{ nginx_repo_file }}"
+    backup: yes
+
+- name: Set up repository pinning
+  ansible.builtin.copy:
+    dest: "{{ nginx_pin_file }}"
+    content: "{{ nginx_pin }}"
+
+- name: Update apt package index
   ansible.builtin.apt:
     update_cache: yes
-  ignore_errors: yes
 
 - name: Install Nginx
   ansible.builtin.apt:
-    name: nginx
+    name: "nginx={{ nginx_version }}"
     state: present
 
-- name: Check Status of Nginx Service
-  ansible.builtin.systemd:
-    name: nginx
-    state: started
-  register: nginx_status
-
-- name: Start and Enable Nginx service if not already started and enabled
+- name: Ensure Nginx service is started and enabled
   ansible.builtin.systemd:
     name: nginx
     state: started
     enabled: yes
-  register: nginx_status
-  ignore_errors: true
 
-- name: Display Nginx service status
+- name: Check Nginx Version
+  ansible.builtin.shell:
+    cmd: "nginx -v 2>&1 | awk -F '/' '{print $2}' | cut -d ' ' -f 1"
+  register: nginx_version_output
+  changed_when: false
+
+- name: Display Nginx Version
   ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} : {{ ansible_host }} - Nginx Service is  {{ 'Running' if nginx_status.state == 'started' else 'Not Running'}}"
-
-- name: Set Nginx Package to Remain Fixed at v1.26.0 (Disable auto-update)
-  ansible.builtin.command:
-    cmd: echo "nginx hold" | sudo dpkg --set-selections
+    msg: "Nginx Version is {{ nginx_version_output.stdout }}"
