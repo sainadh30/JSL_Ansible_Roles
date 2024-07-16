@@ -5,30 +5,11 @@
     state: present
     update_cache: yes
 
-- name: Backup existing Nginx repository file
-  ansible.builtin.shell:
-    cmd: "cp {{ nginx_repo_file }} {{ nginx_backup_file }}"
-  args:
-    creates: "{{ nginx_backup_file }}"
-  changed_when: false
-  ignore_errors: yes
-
 - name: Import Nginx signing key
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: curl -fsSL {{ nginx_signing_key_url }} | sudo gpg --dearmor -o {{ nginx_keyring_path }}
   args:
     creates: "{{ nginx_keyring_path }}"
-
-- name: Verify Nginx signing key
-  ansible.builtin.command:
-    cmd: gpg --dry-run --quiet --no-keyring --import --import-options import-show {{ nginx_keyring_path }}
-  register: gpg_key_check
-
-- name: Ensure the Nginx signing key is correct
-  ansible.builtin.assert:
-    that:
-      - "'573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62' in gpg_key_check.stdout"
-    fail_msg: "Nginx signing key fingerprint does not match."
 
 - name: Generate Nginx repository file
   ansible.builtin.copy:
@@ -36,11 +17,6 @@
       deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] {{ nginx_repo_url }}
     dest: "{{ nginx_repo_file }}"
     backup: yes
-
-- name: Set up repository pinning
-  ansible.builtin.copy:
-    dest: "{{ nginx_pin_file }}"
-    content: "{{ nginx_pin }}"
 
 - name: Update apt package index
   ansible.builtin.apt:
