@@ -3,19 +3,16 @@
   ansible.builtin.stat:
     path: "{{ gpg_path }}"
   register: nginx_key_stat
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Add Nginx Repository GPG Key
   ansible.builtin.shell:
     cmd: "{{ gpg_key }}"
   when: not nginx_key_stat.stat.exists
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Check if Nginx Repository file exists
   ansible.builtin.stat:
     path: "{{ nginx_repo_path }}"
   register: nginx_repo_stat
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Add Nginx Repository to System
   ansible.builtin.lineinfile:
@@ -23,26 +20,22 @@
     line: "{{ nginx_repo }}"
     create: yes
   when: not nginx_repo_stat.stat.exists
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Update package cache
   ansible.builtin.apt:
     update_cache: yes
   ignore_errors: yes
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Install Nginx
   ansible.builtin.apt:
     name: nginx
     state: present
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Check Status of Nginx Service
   ansible.builtin.systemd:
     name: nginx
     state: started
   register: nginx_status
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Start and Enable Nginx service if not already started and enabled
   ansible.builtin.systemd:
@@ -50,15 +43,12 @@
     state: started
     enabled: yes
   register: nginx_status
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
   ignore_errors: true
 
 - name: Display Nginx service status
   ansible.builtin.debug:
     msg: "{{ ansible_hostname }} : {{ ansible_host }} - Nginx Service is  {{ 'Running' if nginx_status.state == 'started' else 'Not Running'}}"
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 - name: Set Nginx Package to Remain Fixed at v1.26.0 (Disable auto-update)
   ansible.builtin.command:
     cmd: echo "nginx hold" | sudo dpkg --set-selections
-  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
