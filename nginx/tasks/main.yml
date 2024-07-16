@@ -4,15 +4,19 @@
 # Set up proxy
 # - name: SetUp Proxy
 #   include_tasks: proxy.yml
+#   when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 # Install Nginx
 - name: Install Nginx
   include_tasks: nginx.yml
+  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 # Configure Nginx
 - name: Configure Nginx
   include_tasks: nginxconf.yml
+  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
 
 # Install HAProxy
 - name: Install HAProxy
   include_tasks: haproxy.yml
+  when: "'internal_nginx' in group_names or 'external_nginx' in group_names"
